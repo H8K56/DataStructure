@@ -1,9 +1,9 @@
 #include "../HeaderFiles/Life.h"
-#include <iostream> // Include <iostream> for cout and endl
-#include <cstdlib> // for rand() and srand()
-#include <ctime> // for time()
+#include <iostream> 
+#include <cstdlib> 
+#include <ctime> 
 
-using namespace std; // Use the std namespace
+using namespace std;
 
 void Life::initialise() {
     srand(time(0)); // Seed the random number generator inside a function
@@ -11,9 +11,9 @@ void Life::initialise() {
     for (int row = 0; row < MAXROWS; row++) {
         for (int col = 0; col < MAXCOLS; col++) {
             // Generate a random number between 0 and 1
-            int random = rand() % 2; // Generate random integer in range [0, 1]
+           
+            int random = rand() % 2;
 
-            // Set the cell to ALIVE if the random number is 0, otherwise set it to DEAD
             if (random == 0) {
                 grid[row][col] = ALIVE;
             } else {
