@@ -1,0 +1,25 @@
+left to right
+8 - 3 * (4 + 2)
+
+8 3 4 2 + * - 
+stack: - * ( +
+newStack: empty lol
+
+(8 - 3) * (4 + 2)
+
+8 3 - 4 2 + *
+stack: * ( + 
+newStack : null
+
+(8 - 3) * 4 + 2
+8 3 - 4 * 2 +
+stack: 
+
+(-a + b) * (c + a) - 5
+a ~ b + c a + * 5 -
+stack: 
+
+(5 > 4) and not(3 = 2 - 1)
+5 4 > && 3 2 = 1 - !
+5 4 > 3 2 1 - = ! &&
+stack:
