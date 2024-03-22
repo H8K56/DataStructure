@@ -4,13 +4,16 @@
 #include <iostream>
 using namespace std;
 
+const int GRID_SIZE = 3;
+const int TARGET_VALUE = 9;
+
 Move::Move()
 {
     row = 0;
     col = 0;
     numOfMoves = 0;
     difficulty = 0;
-    size = 3;
+    size = GRID_SIZE;
 }
 
 void Move::Initialize()
@@ -92,11 +95,11 @@ void Move::SetMove(int row, int col)
 
     for (int i = 0; i < size; ++i)
     {
-        grid[i][col] = (grid[i][col] == 9) ? 1 : grid[i][col]++;
-        grid[row][i] = (grid[row][i] == 9) ? 1 : grid[row][i]++;
+        grid[i][col] = (grid[i][col] == TARGET_VALUE) ? 1 : grid[i][col]++;
+        grid[row][i] = (grid[row][i] == TARGET_VALUE) ? 1 : grid[row][i]++;
     }
 
-    grid[row][col] = (grid[row][col] == 9) ? 1 : grid[row][col]++;
+    grid[row][col] = (grid[row][col] == TARGET_VALUE) ? 1 : grid[row][col]++;
 }
 
 void Move::GamePlay()
@@ -119,7 +122,7 @@ bool Move::CheckWinStatus() const
     {
         for (int j = 0; j < 3; ++j)
         {
-            if (grid[i][j] != 9)
+            if (grid[i][j] != TARGET_VALUE)
             {
                 return false;
             }
@@ -142,11 +145,11 @@ void Move::Undo()
 
     for (int i = 0; i < size; ++i)
     {
-        grid[i][col] = (grid[i][col] == 1) ? 9 : grid[i][col]--;
-        grid[row][i] = (grid[row][i] == 1) ? 9 : grid[row][i]--;
+        grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : grid[i][col]--;
+        grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : grid[row][i]--;
     }
 
-    grid[row][col] = (grid[row][col] == 1) ? 9 : grid[row][col]--;
+    grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : grid[row][col]--;
 }
 
 void Move::Redo()
@@ -155,9 +158,9 @@ void Move::Redo()
 
     for (int i = 0; i < size; ++i)
     {
-        grid[i][col] = (grid[i][col] == 9) ? 1 : grid[i][col]++;
-        grid[row][i] = (grid[row][i] == 9) ? 1 : grid[row][i]++;
+        grid[i][col] = (grid[i][col] == TARGET_VALUE) ? 1 : grid[i][col]++;
+        grid[row][i] = (grid[row][i] == TARGET_VALUE) ? 1 : grid[row][i]++;
     }
 
-    grid[row][col] = (grid[row][col] == 9) ? 1 : grid[row][col]++;
+    grid[row][col] = (grid[row][col] == TARGET_VALUE) ? 1 : grid[row][col]++;
 }
