@@ -11,6 +11,7 @@ struct Node{
 class Stack{
     public:
         Stack();
+        ~Stack();
         bool empty() const;
         errorCode push(const Entry &x);
         errorCode pop();

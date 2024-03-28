@@ -18,6 +18,11 @@ Stack::Stack()
     topNode = nullptr;
 }
 
+Stack::~Stack()
+{
+    clear();
+}
+
 bool Stack::empty() const
 {
     return topNode == nullptr;
