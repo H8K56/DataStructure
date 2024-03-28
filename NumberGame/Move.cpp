@@ -1,8 +1,13 @@
 #include "./Move.h"
+#include "./Stack.h"
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 using namespace std;
+
+//New Game is left to do
+//Undo and Redo is left to do (use a linked stack)
 
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
@@ -19,7 +24,6 @@ Move::Move()
 void Move::Initialize()
 {
     srand(time(0));
-
     for (int i = 0; i < size; i++)
     {
         for (int j = 0; j < size; j++)
@@ -72,14 +76,11 @@ int Move::GetNumOfMoves() const
     return this->numOfMoves;
 }
 
-void Move::SetMove(int row, int col)
-{
-    this->row = row;
-    this->col = col;
-}
 
 void Move::DisplayGrid() const
 {
+    cout << "Number of moves left: " << numOfMoves << endl;
+
     for (int i = 0; i < size; i++)
     {
         for (int j = 0; j < size; j++)
@@ -92,35 +93,53 @@ void Move::DisplayGrid() const
 
 void Move::SetMove(int row, int col)
 {
-
+    this->row = row;
+    this->col = col;
     for (int i = 0; i < size; ++i)
     {
-        grid[i][col] = (grid[i][col] == TARGET_VALUE) ? 1 : grid[i][col]++;
-        grid[row][i] = (grid[row][i] == TARGET_VALUE) ? 1 : grid[row][i]++;
+        if(i != col)
+        {
+            grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : ++grid[i][col];
+        }
+        if (i != row)
+        {
+            grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : ++grid[row][i];
+        }
     }
 
-    grid[row][col] = (grid[row][col] == TARGET_VALUE) ? 1 : grid[row][col]++;
+    grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE :++grid[row][col];
+
+    this->numOfMoves--;
 }
 
 void Move::GamePlay()
 {
-    cout << "Enter the row and column: ";
-    cin >> row >> col;
-    DisplayGrid();
+    int row, col;
+    cout << "Enter the row: ";
+    cin >> row;
+    cout << "\n Enter the column: ";
+    cin >> col;
+    
     SetMove(row, col);
-    if (CheckWinStatus())
+
+    DisplayGrid();
+
+    if (CheckWinStatus() && numOfMoves > 0)
     {
         cout << "Congratulations! You've won the game!" << endl;
         return;
+    }else if (numOfMoves == 0)
+    {
+        cout << "You've run out of moves! Game over!" << endl;
+        return;
     }
-    DisplayGrid();
 }
 
 bool Move::CheckWinStatus() const
 {
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < size; ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int j = 0; j < size; ++j)
         {
             if (grid[i][j] != TARGET_VALUE)
             {
@@ -143,24 +162,16 @@ void Move::Undo()
 {
     cout << "Undoing the last move..." << endl;
 
-    for (int i = 0; i < size; ++i)
-    {
-        grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : grid[i][col]--;
-        grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : grid[row][i]--;
-    }
+    
 
-    grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : grid[row][col]--;
+    this->numOfMoves++;
 }
 
 void Move::Redo()
 {
     cout << "Redoing the last move..." << endl;
 
-    for (int i = 0; i < size; ++i)
-    {
-        grid[i][col] = (grid[i][col] == TARGET_VALUE) ? 1 : grid[i][col]++;
-        grid[row][i] = (grid[row][i] == TARGET_VALUE) ? 1 : grid[row][i]++;
-    }
+    
 
-    grid[row][col] = (grid[row][col] == TARGET_VALUE) ? 1 : grid[row][col]++;
+    this->numOfMoves++;
 }
