@@ -6,8 +6,6 @@
 #include <iomanip>
 using namespace std;
 
-// New Game is left to do
-// Undo and Redo is left to do (use a linked stack)
 
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
@@ -37,7 +35,6 @@ void Move::Initialize()
 void Move::NewGame()
 {
     srand(time(0));
-    // use setDifficulty to set the number of moves in the main function
     int count = GetNumOfMoves();
 
     while (count > 0)
@@ -73,35 +70,35 @@ void Move::SetDifficulty(int difficulty)
 
     switch (this->difficulty)
     {
-        case 1:
-            this->numOfMoves = 1;
-            break;
-        case 2:
-            this->numOfMoves = 2;
-            break;
-        case 3:
-            this->numOfMoves = 3;
-            break;
-        case 4:
-            this->numOfMoves = 4;
-            break;
-        case 5:
-            this->numOfMoves = 5;
-            break;
-        case 6:
-            this->numOfMoves = 6;
-            break;
-        case 7:
-            this->numOfMoves = 7;
-            break;
-        case 8:
-            this->numOfMoves = 8;
-            break;
-        case 9:
-            this->numOfMoves = 10;
-            break;
-        default:
-            break;
+    case 1:
+        this->numOfMoves = 1;
+        break;
+    case 2:
+        this->numOfMoves = 2;
+        break;
+    case 3:
+        this->numOfMoves = 3;
+        break;
+    case 4:
+        this->numOfMoves = 4;
+        break;
+    case 5:
+        this->numOfMoves = 5;
+        break;
+    case 6:
+        this->numOfMoves = 6;
+        break;
+    case 7:
+        this->numOfMoves = 7;
+        break;
+    case 8:
+        this->numOfMoves = 8;
+        break;
+    case 9:
+        this->numOfMoves = 10;
+        break;
+    default:
+        break;
     }
 }
 
@@ -118,20 +115,34 @@ void Move::DisplayGrid() const
     {
         for (int j = 0; j < size; j++)
         {
-            cout << grid[i][j] << " ";
+            cout << setw(3) << grid[i][j] << " | ";
         }
         cout << endl;
+        if (i != size - 1)
+        {
+            for (int k = 0; k < size; k++)
+            {
+                cout << "----";
+                if (k != size - 1)
+                {
+                    cout << "+";
+                }
+            }
+            cout << endl;
+        }
     }
 }
 
-void Move::SetMove(int row, int col) {
+void Move::SetMove(int row, int col)
+{
     this->row = row;
     this->col = col;
 
     undoStack.push(Position(row, col));
 
     // Clear the redo stack
-    while (!redoStack.isEmpty()) {
+    while (!redoStack.isEmpty())
+    {
         redoStack.pop();
     }
 
@@ -140,40 +151,80 @@ void Move::SetMove(int row, int col) {
     this->numOfMoves--;
 }
 
-void Move::ApplyMove(int row, int col) {
-    for (int i = 0; i < size; ++i) {
-        if (i != col) {
+void Move::ApplyMove(int row, int col)
+{
+    for (int i = 0; i < size; ++i)
+    {
+        if (i != col)
+        {
             grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : ++grid[i][col];
         }
-        if (i != row) {
+        if (i != row)
+        {
             grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : ++grid[row][i];
         }
     }
     grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : ++grid[row][col];
 }
 
+void Move::GameOptions(int choice) const
+{
+    switch (choice)
+    {
+        case 1:
+            GameLogic();
+            break;
+        case 2:
+            Undo();
+            break;
+        case 3:
+            Redo();
+            break;
+        default:
+            break;
+    }
+}
+
 void Move::GamePlay()
 {
     int row, col;
-    cout << "Enter the row: ";
-    cin >> row;
-    cout << "\n Enter the column: ";
-    cin >> col;
+    char continueGame;
 
-    SetMove(row, col);
-
-    DisplayGrid();
-
-    if (CheckWinStatus() && numOfMoves > 0)
+    do
     {
-        cout << "Congratulations! You've won the game!" << endl;
-        return;
-    }
-    else if (numOfMoves == 0)
-    {
-        cout << "You've run out of moves! Game over!" << endl;
-        return;
-    }
+        NewGame();
+        DisplayGrid();
+
+        cout << "\nChoose a difficulty level between (easy)1 and 9(hard): ";
+        cout << "\nEnter the row: ";
+        cin >> row;
+        cout << "\n Enter the column: ";
+        cin >> col;
+
+        SetMove(row, col);
+
+        DisplayGrid();
+
+        if (CheckWinStatus() && numOfMoves > 0)
+        {
+            cout << "Congratulations! You've won the game!" << endl;
+            return;
+        }
+        else
+        {
+            cout << "You lose! Good day person!" << endl;
+            return;
+        }
+
+        if (numOfMoves == 0)
+        {
+            cout << "You've run out of moves! Game over!" << endl;
+            return;
+        }
+
+        cout << "Do you want to continue playing? (Y/N): ";
+        cin >> continueGame;
+    } while (continueGame == 'Y' || continueGame == 'y');
 }
 
 bool Move::CheckWinStatus() const
@@ -199,26 +250,34 @@ void Move::GameLogic() const
     cout << "Good luck!" << endl;
 }
 
-void Move::Undo() {
-    if (!undoStack.isEmpty()) {
+void Move::Undo()
+{
+    if (!undoStack.isEmpty())
+    {
         Position lastMove = undoStack.top();
         undoStack.pop();
         redoStack.push(lastMove);
         ApplyMove(lastMove.row, lastMove.col);
         this->numOfMoves++;
-    } else {
+    }
+    else
+    {
         cout << "Nothing to undo!" << endl;
     }
 }
 
-void Move::Redo() {
-    if (!redoStack.isEmpty()) {
+void Move::Redo()
+{
+    if (!redoStack.isEmpty())
+    {
         Position lastMove = redoStack.top();
         redoStack.pop();
         undoStack.push(lastMove);
         ApplyMove(lastMove.row, lastMove.col);
         this->numOfMoves--;
-    } else {
+    }
+    else
+    {
         cout << "Nothing to redo!" << endl;
     }
 }

@@ -31,6 +31,7 @@ public:
     int GetNumOfMoves() const;
 
     // Game logic and display
+    void GameOptions(int choice) const;
     void GameLogic() const;
     void GamePlay();
     void DisplayGrid() const;
