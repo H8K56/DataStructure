@@ -11,6 +11,7 @@ using namespace std;
 
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
+Stack undoStack, redoStack;
 
 Move::Move()
 {
@@ -36,7 +37,7 @@ void Move::NewGame()
 {
     srand(time(0));
     // use setDifficulty to set the number of moves in the main function
-    int count = this->numOfMoves;
+    int count = GetNumOfMoves();
 
     while (count > 0)
     {
@@ -126,6 +127,7 @@ void Move::SetMove(int row, int col)
 {
     this->row = row;
     this->col = col;
+
     for (int i = 0; i < size; ++i)
     {
         if (i != col)
@@ -193,10 +195,13 @@ void Move::GameLogic() const
 void Move::Undo()
 {
     cout << "Undoing the last move..." << endl;
+    
+    const Position moves(this->row, this->col);
 
     
+    undoStack.push(moves);
 
-    this->numOfMoves++;
+    this->numOfMoves--;
 }
 
 void Move::Redo()
