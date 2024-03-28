@@ -8,6 +8,13 @@ struct Node{
     Node(int,Node* = nullptr);
 };
 
+struct Position{
+    const int row;
+    const int col;
+
+    Position(int r, int c) : row(r), col(c) {}
+};
+
 class Stack{
     public:
         Stack();
