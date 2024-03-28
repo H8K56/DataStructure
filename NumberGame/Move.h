@@ -16,7 +16,8 @@ public:
 
     // Game actions
     void ReverseGrid(int row, int col);
-    void SetMove(int row, int col);
+    void SetMove( int row, int col);
+    void ApplyMove(int row, int col);
     void Undo();
     void Redo();
 

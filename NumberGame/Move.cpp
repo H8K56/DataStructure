@@ -12,6 +12,7 @@ using namespace std;
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
 Stack undoStack, redoStack;
+Position moves(this->row, this->col);
 
 Move::Move()
 {
@@ -123,26 +124,32 @@ void Move::DisplayGrid() const
     }
 }
 
-void Move::SetMove(int row, int col)
-{
+void Move::SetMove(int row, int col) {
     this->row = row;
     this->col = col;
 
-    for (int i = 0; i < size; ++i)
-    {
-        if (i != col)
-        {
+    undoStack.push(Position(row, col));
+
+    // Clear the redo stack
+    while (!redoStack.isEmpty()) {
+        redoStack.pop();
+    }
+
+    ApplyMove(row, col);
+
+    this->numOfMoves--;
+}
+
+void Move::ApplyMove(int row, int col) {
+    for (int i = 0; i < size; ++i) {
+        if (i != col) {
             grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : ++grid[i][col];
         }
-        if (i != row)
-        {
+        if (i != row) {
             grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : ++grid[row][i];
         }
     }
-
     grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : ++grid[row][col];
-
-    this->numOfMoves--;
 }
 
 void Move::GamePlay()
@@ -192,21 +199,26 @@ void Move::GameLogic() const
     cout << "Good luck!" << endl;
 }
 
-void Move::Undo()
-{
-    cout << "Undoing the last move..." << endl;
-    
-    Position moves(this->row, this->col);
-
-    
-    undoStack.push(moves);
-
-    this->numOfMoves--;
+void Move::Undo() {
+    if (!undoStack.isEmpty()) {
+        Position lastMove = undoStack.top();
+        undoStack.pop();
+        redoStack.push(lastMove);
+        ApplyMove(lastMove.row, lastMove.col);
+        this->numOfMoves++;
+    } else {
+        cout << "Nothing to undo!" << endl;
+    }
 }
 
-void Move::Redo()
-{
-    cout << "Redoing the last move..." << endl;
-
-    this->numOfMoves++;
+void Move::Redo() {
+    if (!redoStack.isEmpty()) {
+        Position lastMove = redoStack.top();
+        redoStack.pop();
+        undoStack.push(lastMove);
+        ApplyMove(lastMove.row, lastMove.col);
+        this->numOfMoves--;
+    } else {
+        cout << "Nothing to redo!" << endl;
+    }
 }
