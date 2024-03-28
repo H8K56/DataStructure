@@ -12,9 +12,10 @@ public:
 
     // Initialization and game setup
     void Initialize();
-    void NewGame(int rows, int cols, int difficultyLevel);
+    void NewGame();
 
     // Game actions
+    void ReverseGrid(int row, int col);
     void SetMove(int row, int col);
     void Undo();
     void Redo();

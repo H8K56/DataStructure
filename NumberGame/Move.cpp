@@ -6,8 +6,8 @@
 #include <iomanip>
 using namespace std;
 
-//New Game is left to do
-//Undo and Redo is left to do (use a linked stack)
+// New Game is left to do
+// Undo and Redo is left to do (use a linked stack)
 
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
@@ -23,14 +23,46 @@ Move::Move()
 
 void Move::Initialize()
 {
-    srand(time(0));
     for (int i = 0; i < size; i++)
     {
         for (int j = 0; j < size; j++)
         {
-            grid[i][j] = rand() % 9 + 1;
+            grid[i][j] = TARGET_VALUE;
         }
     }
+}
+
+void Move::NewGame()
+{
+    srand(time(0));
+    // use setDifficulty to set the number of moves in the main function
+    int count = this->numOfMoves;
+
+    while (count > 0)
+    {
+        int randomRow = rand() % size;
+        int randomCol = rand() % size;
+
+        ReverseGrid(randomRow, randomCol);
+        count--;
+    }
+}
+
+void Move::ReverseGrid(int row, int col)
+{
+    for (int i = 0; i < size; ++i)
+    {
+        if (i != col)
+        {
+            grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : --grid[i][col];
+        }
+        if (i != row)
+        {
+            grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : --grid[row][i];
+        }
+    }
+
+    grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : --grid[row][col];
 }
 
 void Move::SetDifficulty(int difficulty)
@@ -39,35 +71,35 @@ void Move::SetDifficulty(int difficulty)
 
     switch (this->difficulty)
     {
-    case 1:
-        this->numOfMoves = 10;
-        break;
-    case 2:
-        this->numOfMoves = 8;
-        break;
-    case 3:
-        this->numOfMoves = 7;
-        break;
-    case 4:
-        this->numOfMoves = 6;
-        break;
-    case 5:
-        this->numOfMoves = 5;
-        break;
-    case 6:
-        this->numOfMoves = 4;
-        break;
-    case 7:
-        this->numOfMoves = 3;
-        break;
-    case 8:
-        this->numOfMoves = 2;
-        break;
-    case 9:
-        this->numOfMoves = 1;
-        break;
-    default:
-        break;
+        case 1:
+            this->numOfMoves = 1;
+            break;
+        case 2:
+            this->numOfMoves = 2;
+            break;
+        case 3:
+            this->numOfMoves = 3;
+            break;
+        case 4:
+            this->numOfMoves = 4;
+            break;
+        case 5:
+            this->numOfMoves = 5;
+            break;
+        case 6:
+            this->numOfMoves = 6;
+            break;
+        case 7:
+            this->numOfMoves = 7;
+            break;
+        case 8:
+            this->numOfMoves = 8;
+            break;
+        case 9:
+            this->numOfMoves = 10;
+            break;
+        default:
+            break;
     }
 }
 
@@ -75,7 +107,6 @@ int Move::GetNumOfMoves() const
 {
     return this->numOfMoves;
 }
-
 
 void Move::DisplayGrid() const
 {
@@ -97,7 +128,7 @@ void Move::SetMove(int row, int col)
     this->col = col;
     for (int i = 0; i < size; ++i)
     {
-        if(i != col)
+        if (i != col)
         {
             grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : ++grid[i][col];
         }
@@ -107,7 +138,7 @@ void Move::SetMove(int row, int col)
         }
     }
 
-    grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE :++grid[row][col];
+    grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : ++grid[row][col];
 
     this->numOfMoves--;
 }
@@ -119,7 +150,7 @@ void Move::GamePlay()
     cin >> row;
     cout << "\n Enter the column: ";
     cin >> col;
-    
+
     SetMove(row, col);
 
     DisplayGrid();
@@ -128,7 +159,8 @@ void Move::GamePlay()
     {
         cout << "Congratulations! You've won the game!" << endl;
         return;
-    }else if (numOfMoves == 0)
+    }
+    else if (numOfMoves == 0)
     {
         cout << "You've run out of moves! Game over!" << endl;
         return;
@@ -170,8 +202,6 @@ void Move::Undo()
 void Move::Redo()
 {
     cout << "Redoing the last move..." << endl;
-
-    
 
     this->numOfMoves++;
 }
