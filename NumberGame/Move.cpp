@@ -196,7 +196,7 @@ void Move::Undo()
 {
     cout << "Undoing the last move..." << endl;
     
-    const Position moves(this->row, this->col);
+    Position moves(this->row, this->col);
 
     
     undoStack.push(moves);
