@@ -1,18 +1,18 @@
 enum errorCode {underflow,overflow,success};
-typedef int Entry;
-
-struct Node{
-    Entry entry;
-    Node *next;
-    Node();
-    Node(int,Node* = nullptr);
-};
 
 struct Position{
     const int row;
     const int col;
 
     Position(int r, int c) : row(r), col(c) {}
+};
+
+
+struct Node {
+    Position position;
+    Node *next;
+    
+    Node(Position p, Node *n = nullptr) : position(p), next(n) {}
 };
 
 class Stack{
