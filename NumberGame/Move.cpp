@@ -6,20 +6,10 @@
 #include <iomanip>
 using namespace std;
 
-
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
-Stack undoStack, redoStack;
-Position moves(this->row, this->col);
 
-Move::Move()
-{
-    row = 0;
-    col = 0;
-    numOfMoves = 0;
-    difficulty = 0;
-    size = GRID_SIZE;
-}
+Move::Move() : row(0), col(0), numOfMoves(0), difficulty(0), size(GRID_SIZE) {}
 
 void Move::Initialize()
 {
@@ -133,22 +123,16 @@ void Move::DisplayGrid() const
     }
 }
 
-void Move::SetMove(int row, int col)
+void Move::SetMove(int r, int c)
 {
-    this->row = row;
-    this->col = col;
+    row = r;
+    col = c;
 
-    undoStack.push(Position(row, col));
+    PushMoveToUndoStack();
 
-    // Clear the redo stack
-    while (!redoStack.isEmpty())
-    {
-        redoStack.pop();
-    }
+    ApplyMove(r, c);
 
-    ApplyMove(row, col);
-
-    this->numOfMoves--;
+    numOfMoves--;
 }
 
 void Move::ApplyMove(int row, int col)
@@ -169,31 +153,42 @@ void Move::ApplyMove(int row, int col)
 
 void Move::GameOptions(int choice) const
 {
+    cout << "1. Start a new game" << endl;
+    cout << "2. Undo" << endl;
+    cout << "3. Redo" << endl;
+    cout << "4. View game instructions" << endl;
     switch (choice)
     {
-        case 1:
-            GameLogic();
-            break;
-        case 2:
-            Undo();
-            break;
-        case 3:
-            Redo();
-            break;
-        default:
-            break;
+    case 1:
+        NewGame();
+        break;
+    case 2:
+        Undo();
+        break;
+    case 3:
+        Redo();
+        break;
+    case 4:
+        GameLogic();
+        break;
+    default:
+        break;
     }
 }
 
 void Move::GamePlay()
 {
-    int row, col;
+    int row, col, choice;
     char continueGame;
 
     do
     {
         NewGame();
         DisplayGrid();
+
+        cout << "Options: ";
+        cin >> choice;
+        GameOptions(choice);
 
         cout << "\nChoose a difficulty level between (easy)1 and 9(hard): ";
         cout << "\nEnter the row: ";
@@ -252,13 +247,13 @@ void Move::GameLogic() const
 
 void Move::Undo()
 {
-    if (!undoStack.isEmpty())
+    if (!undoStack.empty())
     {
         Position lastMove = undoStack.top();
         undoStack.pop();
         redoStack.push(lastMove);
         ApplyMove(lastMove.row, lastMove.col);
-        this->numOfMoves++;
+        numOfMoves++;
     }
     else
     {
@@ -268,16 +263,21 @@ void Move::Undo()
 
 void Move::Redo()
 {
-    if (!redoStack.isEmpty())
+    if (!redoStack.empty())
     {
         Position lastMove = redoStack.top();
         redoStack.pop();
         undoStack.push(lastMove);
         ApplyMove(lastMove.row, lastMove.col);
-        this->numOfMoves--;
+        numOfMoves--;
     }
     else
     {
         cout << "Nothing to redo!" << endl;
     }
+}
+
+void Move::PushMoveToUndoStack()
+{
+    undoStack.push(Position(row, col));
 }
