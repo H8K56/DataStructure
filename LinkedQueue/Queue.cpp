@@ -45,3 +45,25 @@ errorCode Queue::retrieve(Entry &item) const{
 int Queue::size() const{
     return count;
 }
+
+bool Queue::full() const{
+    Node *temp = new Node;
+    if(temp == nullptr) return true;
+    delete temp;
+    return false;
+}
+
+void Queue::print() const{
+    Node *temp = frontNode;
+    while(temp != nullptr){
+        cout << temp->entry << " ";
+        temp = temp->next;
+    }
+    cout << endl;
+}
+
+void Queue::clear(){
+    while(!empty()){
+        serve();
+    }
+}

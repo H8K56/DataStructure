@@ -1,10 +1,14 @@
+#ifndef MOVE_H
+#define MOVE_H
+
+const int MAX = 3;
 class Move {
 private:
     int row, col;
     int difficulty;
     int size;
     int numOfMoves;
-    int grid[3][3];
+    int grid[MAX][MAX];
 
 public:
     // Constructor
@@ -16,6 +20,7 @@ public:
 
     // Game actions
     void ReverseGrid(int row, int col);
+    void PushMoveToUndoStack();
     void SetMove( int row, int col);
     void ApplyMove(int row, int col);
     void Undo();
@@ -25,15 +30,16 @@ public:
     void SetDifficulty(int difficultyLevel);
 
     // Game status checks
-    bool CheckWinStatus() const;
+    bool CheckWinStatus() ;
 
     // Getter
-    int GetNumOfMoves() const;
+    int GetNumOfMoves();
 
     // Game logic and display
-    void GameOptions(int choice) const;
-    void GameLogic() const;
+    void GameOptions(int choice) ;
+    void GameLogic() ;
     void GamePlay();
-    void DisplayGrid() const;
+    void DisplayGrid();
 };
 
+#endif // MOVE_H

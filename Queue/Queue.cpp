@@ -26,7 +26,7 @@ int Queue::size() const
 
 int Queue::next(int &n)
 {
-    n = (n + 1) % MAX;
+    n = (n + 1) % MAX; // Circular queue
 
     return n;
 }
@@ -73,4 +73,11 @@ void Queue::print()
         next(pos);
     }
     cout << endl;
+}
+
+void Queue::clear()
+{
+    count = 0;
+    front = 0;
+    rear = MAX - 1;
 }

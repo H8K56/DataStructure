@@ -10,7 +10,9 @@ public:
     errorCode serve();
     errorCode retrieve(Entry &item) const;
     int size() const;
+    bool full() const;
     void print() const;
+    void clear();   
 private:
     struct Node{
         Entry entry;

@@ -22,6 +22,7 @@ public:
     bool full() const;
     int size() const;
     void print();
+    void clear();
 
 private:
     int front, rear;

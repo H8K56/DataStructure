@@ -1,5 +1,5 @@
-#include "./Move.h"
-#include "./Stack.h"
+#include "../../DataStructure/NumberGame/Move.h"
+#include "../../DataStructure/NumberGame/Stack.h"
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
@@ -8,6 +8,7 @@ using namespace std;
 
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
+Stack undoStack, redoStack;
 
 Move::Move() : row(0), col(0), numOfMoves(0), difficulty(0), size(GRID_SIZE) {}
 
@@ -92,12 +93,12 @@ void Move::SetDifficulty(int difficulty)
     }
 }
 
-int Move::GetNumOfMoves() const
+int Move::GetNumOfMoves() 
 {
     return this->numOfMoves;
 }
 
-void Move::DisplayGrid() const
+void Move::DisplayGrid() 
 {
     cout << "Number of moves left: " << numOfMoves << endl;
 
@@ -151,7 +152,7 @@ void Move::ApplyMove(int row, int col)
     grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : ++grid[row][col];
 }
 
-void Move::GameOptions(int choice) const
+void Move::GameOptions(int choice) 
 {
     cout << "1. Start a new game" << endl;
     cout << "2. Undo" << endl;
@@ -222,7 +223,7 @@ void Move::GamePlay()
     } while (continueGame == 'Y' || continueGame == 'y');
 }
 
-bool Move::CheckWinStatus() const
+bool Move::CheckWinStatus() 
 {
     for (int i = 0; i < size; ++i)
     {
@@ -237,7 +238,7 @@ bool Move::CheckWinStatus() const
     return true;
 }
 
-void Move::GameLogic() const
+void Move::GameLogic() 
 {
     cout << "The objective of the game is to make all the numbers in the grid equal to 9." << endl;
     cout << "You can do this by selecting a row and column, which will increment all the numbers in that row and column by 1." << endl;
@@ -247,37 +248,34 @@ void Move::GameLogic() const
 
 void Move::Undo()
 {
-    if (!undoStack.empty())
-    {
-        Position lastMove = undoStack.top();
-        undoStack.pop();
-        redoStack.push(lastMove);
-        ApplyMove(lastMove.row, lastMove.col);
-        numOfMoves++;
-    }
-    else
-    {
-        cout << "Nothing to undo!" << endl;
+    Stack lastMove;
+    errorCode result = undoStack.top(lastMove); // Get the top Stack from undoStack
+    if (result == success) {
+        undoStack.pop(); // Pop the top element
+        redoStack.push(lastMove); // Push the last move to redoStack
+        ApplyMove(lastMove.row, lastMove.col); // Apply the move
+        numOfMoves++; // Increment the number of moves
+    } else {
+        cout << "Nothing to undo!" << endl; // Print error message
     }
 }
 
 void Move::Redo()
 {
-    if (!redoStack.empty())
-    {
-        Position lastMove = redoStack.top();
-        redoStack.pop();
-        undoStack.push(lastMove);
-        ApplyMove(lastMove.row, lastMove.col);
-        numOfMoves--;
-    }
-    else
-    {
-        cout << "Nothing to redo!" << endl;
+    Stack lastMove;
+    errorCode result = redoStack.top(lastMove); // Get the top Stack from redoStack
+    if (result == success) {
+        redoStack.pop(); // Pop the top element
+        undoStack.push(lastMove); // Push the last move to undoStack
+        ApplyMove(lastMove.row, lastMove.col); // Apply the move
+        numOfMoves--; // Decrement the number of moves
+    } else {
+        cout << "Nothing to redo!" << endl; // Print error message
     }
 }
 
 void Move::PushMoveToUndoStack()
 {
-    undoStack.push(Position(row, col));
+    Stack move(row, col); // Create a Stack for the move
+    undoStack.push(move); // Push the move to the undoStack
 }

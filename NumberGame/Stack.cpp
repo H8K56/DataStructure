@@ -2,16 +2,9 @@
 #include <iostream>
 using namespace std;
 
-Stack::Stack() : topNode(nullptr) {}
-
 Stack::~Stack()
 {
     clear();
-}
-
-Node::Node(Position p, Node *n) {
-    position = p;
-    next = n;
 }
 
 bool Stack::empty() const
@@ -19,19 +12,15 @@ bool Stack::empty() const
     return topNode == nullptr;
 }
 
-errorCode Stack::top(Position &item) const
+errorCode Stack::push(const Position &x)
 {
-    if (empty())
-        return underflow;
-    item = topNode->position;
-    return success;
-}
-
-errorCode Stack::push(const Position &item)
-{
-    Node *newNode = new Node(item, topNode);
+    Node *newNode = new Node();
     if (newNode == nullptr)
+    {
         return overflow;
+    }
+    newNode->position = x;
+    newNode->next = topNode;
 
     topNode = newNode;
     return success;
@@ -40,40 +29,52 @@ errorCode Stack::push(const Position &item)
 errorCode Stack::pop()
 {
     if (empty())
+    {
         return underflow;
-
+    }
     Node *temp = topNode;
     topNode = topNode->next;
-
     delete temp;
+    return success;
+}
+
+errorCode Stack::top(Position &x) const
+{
+    if (empty())
+    {
+        return underflow;
+    }
+    x = topNode->position;
     return success;
 }
 
 int Stack::size() const
 {
     int count = 0;
-    Node *temp = topNode;
-    while (temp != nullptr)
+    Node *current = topNode;
+    while (current != nullptr)
     {
         count++;
-        temp = temp->next;
+        current = current->next;
     }
     return count;
 }
 
 void Stack::print() const
 {
-    Node *temp = topNode;
-    while (temp != nullptr)
+    Node *current = topNode;
+    while (current != nullptr)
     {
-        cout << "(" << temp->position.row << "," << temp->position.col << ") ";
-        temp = temp->next;
+        cout << "(" << current->position.row << ", " << current->position.col << ") ";
+        current = current->next;
     }
     cout << endl;
 }
 
 void Stack::clear()
 {
-    while (!empty()) pop();
+    while (!empty())
+    {
+        pop();
+    }
 }
-
