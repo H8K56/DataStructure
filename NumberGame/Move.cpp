@@ -6,6 +6,12 @@
 #include <iomanip>
 using namespace std;
 
+/*
+ Fix the flow of the game
+ functions of the game are okay
+ Improve the gameplay
+*/
+
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
 Stack undoStack, redoStack;
@@ -161,13 +167,16 @@ void Move::GameOptions(int choice)
     switch (choice)
     {
     case 1:
-        NewGame();
-        break;
-    case 2:
         Undo();
         break;
-    case 3:
+    case 2:
         Redo();
+        break;
+    case 3:
+        cout << "Exiting game..." << endl;
+        exit(0); // Exit the game
+        break;
+    case 4:
         break;
     default:
         cout << "Invalid choice! Please choose a valid option." << endl;
@@ -179,30 +188,25 @@ void Move::DisplayOptions()
 {
     cout << "\nCurrent Position: "
          << "[" << row << ", " << col << "]" << endl;
-    cout << "1. Start a new game" << endl;
-    cout << "2. Undo" << endl;
-    cout << "3. Redo" << endl;
-    cout << "4. Exit" << endl;
+    cout << "1. Undo" << endl;
+    cout << "2. Redo" << endl;
+    cout << "3. Exit" << endl;
     cout << "Enter your choice: ";
 }
 
 void Move::GamePlay()
 {
-    char continueGame;
     int difficulty;
+    int choice;
 
     cout << "Choose a difficulty level between 1 (easy) and 9 (hard): ";
     cin >> difficulty;
     SetDifficulty(difficulty);
 
+    NewGame();
     do
     {
         DisplayGrid();
-
-        int choice;
-        DisplayOptions();
-        cin >> choice;
-        GameOptions(choice);
 
         cout << "Enter row: ";
         cin >> this->row;
@@ -210,21 +214,13 @@ void Move::GamePlay()
         cin >> this->col;
 
         SetMove(this->row, this->col);
+        DisplayGrid();
 
-        if (CheckWinStatus() && numOfMoves > 0)
-        {
-            cout << "Congratulations! You've won the game!" << endl;
-            return;
-        }
-        else if (numOfMoves == 0)
-        {
-            cout << "You've run out of moves! Game over!" << endl;
-            return;
-        }
+        DisplayOptions();
+        cin >> choice;
+        GameOptions(choice);
 
-        cout << "Do you want to continue playing? (Y/N): ";
-        cin >> continueGame;
-    } while (continueGame == 'Y' || continueGame == 'y');
+    } while (choice != 5); // Continue until the user chooses to view game instructions
 }
 
 bool Move::CheckWinStatus()
