@@ -9,8 +9,9 @@ using namespace std;
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
 Stack undoStack, redoStack;
+Position currentPos;
 
-Move::Move() : row(0), col(0), numOfMoves(0), difficulty(0), size(GRID_SIZE) {}
+Move::Move() : row(0), col(0), numOfMoves(0), difficulty(0), size(GRID_SIZE) { Initialize(); }
 
 void Move::Initialize()
 {
@@ -93,14 +94,14 @@ void Move::SetDifficulty(int difficulty)
     }
 }
 
-int Move::GetNumOfMoves() 
+int Move::GetNumOfMoves()
 {
     return this->numOfMoves;
 }
 
-void Move::DisplayGrid() 
+void Move::DisplayGrid()
 {
-    cout << "Number of moves left: " << numOfMoves << endl;
+    cout << "Number of moves left: " << GetNumOfMoves() << endl;
 
     for (int i = 0; i < size; i++)
     {
@@ -126,12 +127,15 @@ void Move::DisplayGrid()
 
 void Move::SetMove(int r, int c)
 {
-    row = r;
-    col = c;
-
-    PushMoveToUndoStack();
+    this->row = r;
+    this->col = c;
 
     ApplyMove(r, c);
+
+    currentPos.row = r;
+    currentPos.col = c;
+
+    PushMoveToUndoStack(currentPos);
 
     numOfMoves--;
 }
@@ -152,12 +156,8 @@ void Move::ApplyMove(int row, int col)
     grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : ++grid[row][col];
 }
 
-void Move::GameOptions(int choice) 
+void Move::GameOptions(int choice)
 {
-    cout << "1. Start a new game" << endl;
-    cout << "2. Undo" << endl;
-    cout << "3. Redo" << endl;
-    cout << "4. View game instructions" << endl;
     switch (choice)
     {
     case 1:
@@ -169,50 +169,54 @@ void Move::GameOptions(int choice)
     case 3:
         Redo();
         break;
-    case 4:
-        GameLogic();
-        break;
     default:
+        cout << "Invalid choice! Please choose a valid option." << endl;
         break;
     }
 }
 
+void Move::DisplayOptions()
+{
+    cout << "\nCurrent Position: "
+         << "[" << row << ", " << col << "]" << endl;
+    cout << "1. Start a new game" << endl;
+    cout << "2. Undo" << endl;
+    cout << "3. Redo" << endl;
+    cout << "4. Exit" << endl;
+    cout << "Enter your choice: ";
+}
+
 void Move::GamePlay()
 {
-    int row, col, choice;
     char continueGame;
+    int difficulty;
+
+    cout << "Choose a difficulty level between 1 (easy) and 9 (hard): ";
+    cin >> difficulty;
+    SetDifficulty(difficulty);
 
     do
     {
-        NewGame();
         DisplayGrid();
 
-        cout << "Options: ";
+        int choice;
+        DisplayOptions();
         cin >> choice;
         GameOptions(choice);
 
-        cout << "\nChoose a difficulty level between (easy)1 and 9(hard): ";
-        cout << "\nEnter the row: ";
-        cin >> row;
-        cout << "\n Enter the column: ";
-        cin >> col;
+        cout << "Enter row: ";
+        cin >> this->row;
+        cout << "Enter column: ";
+        cin >> this->col;
 
-        SetMove(row, col);
-
-        DisplayGrid();
+        SetMove(this->row, this->col);
 
         if (CheckWinStatus() && numOfMoves > 0)
         {
             cout << "Congratulations! You've won the game!" << endl;
             return;
         }
-        else
-        {
-            cout << "You lose! Good day person!" << endl;
-            return;
-        }
-
-        if (numOfMoves == 0)
+        else if (numOfMoves == 0)
         {
             cout << "You've run out of moves! Game over!" << endl;
             return;
@@ -223,7 +227,7 @@ void Move::GamePlay()
     } while (continueGame == 'Y' || continueGame == 'y');
 }
 
-bool Move::CheckWinStatus() 
+bool Move::CheckWinStatus()
 {
     for (int i = 0; i < size; ++i)
     {
@@ -238,7 +242,7 @@ bool Move::CheckWinStatus()
     return true;
 }
 
-void Move::GameLogic() 
+void Move::GameLogic()
 {
     cout << "The objective of the game is to make all the numbers in the grid equal to 9." << endl;
     cout << "You can do this by selecting a row and column, which will increment all the numbers in that row and column by 1." << endl;
@@ -246,36 +250,53 @@ void Move::GameLogic()
     cout << "Good luck!" << endl;
 }
 
+// Check this issue
 void Move::Undo()
 {
-    Stack lastMove;
-    errorCode result = undoStack.top(lastMove); // Get the top Stack from undoStack
-    if (result == success) {
-        undoStack.pop(); // Pop the top element
-        redoStack.push(lastMove); // Push the last move to redoStack
-        ApplyMove(lastMove.row, lastMove.col); // Apply the move
-        numOfMoves++; // Increment the number of moves
-    } else {
-        cout << "Nothing to undo!" << endl; // Print error message
+    Position lastMove;
+
+    if (undoStack.empty())
+    {
+        cout << "No moves to undo!" << endl;
+        return;
+    }
+
+    if (!undoStack.empty())
+    {
+        undoStack.top(lastMove);
+        ReverseGrid(lastMove.row, lastMove.col);
+        currentPos = lastMove;
+        undoStack.pop();
+        PushMoveToRedoStack(lastMove);
     }
 }
 
 void Move::Redo()
 {
-    Stack lastMove;
-    errorCode result = redoStack.top(lastMove); // Get the top Stack from redoStack
-    if (result == success) {
-        redoStack.pop(); // Pop the top element
-        undoStack.push(lastMove); // Push the last move to undoStack
-        ApplyMove(lastMove.row, lastMove.col); // Apply the move
-        numOfMoves--; // Decrement the number of moves
-    } else {
-        cout << "Nothing to redo!" << endl; // Print error message
+    Position lastMove;
+
+    if (redoStack.empty())
+    {
+        cout << "No moves to redo!" << endl;
+        return;
+    }
+
+    if (!redoStack.empty())
+    {
+        redoStack.top(lastMove);
+        ApplyMove(lastMove.row, lastMove.col);
+        currentPos = lastMove;
+        redoStack.pop();
+        PushMoveToUndoStack(lastMove);
     }
 }
 
-void Move::PushMoveToUndoStack()
+void Move::PushMoveToUndoStack(Position &undoPos)
 {
-    Stack move(row, col); // Create a Stack for the move
-    undoStack.push(move); // Push the move to the undoStack
+    undoStack.push(undoPos);
+}
+
+void Move::PushMoveToRedoStack(Position &redoPos)
+{
+    redoStack.push(redoPos);
 }

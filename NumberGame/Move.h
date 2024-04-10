@@ -1,8 +1,11 @@
 #ifndef MOVE_H
 #define MOVE_H
 
+#include "../../DataStructure/NumberGame/Stack.h"
+
 const int MAX = 3;
-class Move {
+class Move
+{
 private:
     int row, col;
     int difficulty;
@@ -20,8 +23,9 @@ public:
 
     // Game actions
     void ReverseGrid(int row, int col);
-    void PushMoveToUndoStack();
-    void SetMove( int row, int col);
+    void PushMoveToUndoStack(Position &undo);
+    void PushMoveToRedoStack(Position &redo);
+    void SetMove(int row, int col);
     void ApplyMove(int row, int col);
     void Undo();
     void Redo();
@@ -30,16 +34,18 @@ public:
     void SetDifficulty(int difficultyLevel);
 
     // Game status checks
-    bool CheckWinStatus() ;
+    bool CheckWinStatus();
+    
 
     // Getter
     int GetNumOfMoves();
 
     // Game logic and display
-    void GameOptions(int choice) ;
-    void GameLogic() ;
+    void GameOptions(int choice);
+    void GameLogic();
     void GamePlay();
     void DisplayGrid();
+    void DisplayOptions();
 };
 
 #endif // MOVE_H
