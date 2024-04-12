@@ -8,8 +8,8 @@ using namespace std;
 
 /*
  Fix the flow of the game
- functions of the game are okay
  Improve the gameplay
+ functions of the game are okay
 */
 
 const int GRID_SIZE = 3;
@@ -49,11 +49,11 @@ void Move::ReverseGrid(int row, int col)
 {
     for (int i = 0; i < size; ++i)
     {
-        if (i != col)
+        if (i != col && i != row)
         {
             grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : --grid[i][col];
         }
-        if (i != row)
+        if (i != row && i != col)
         {
             grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : --grid[row][i];
         }
@@ -113,14 +113,14 @@ void Move::DisplayGrid()
     {
         for (int j = 0; j < size; j++)
         {
-            cout << setw(3) << grid[i][j] << " | ";
+            cout << setw(2) << grid[i][j] << " | ";
         }
         cout << endl;
         if (i != size - 1)
         {
             for (int k = 0; k < size; k++)
             {
-                cout << "----";
+                cout << setw(2) << "----";
                 if (k != size - 1)
                 {
                     cout << "+";
@@ -150,17 +150,19 @@ void Move::ApplyMove(int row, int col)
 {
     for (int i = 0; i < size; ++i)
     {
-        if (i != col)
+        if (i != col && i != row)
         {
             grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : ++grid[i][col];
         }
-        if (i != row)
+        if (i != row && i != col)
         {
             grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : ++grid[row][i];
         }
     }
+
     grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : ++grid[row][col];
 }
+
 
 void Move::GameOptions(int choice)
 {
@@ -173,10 +175,14 @@ void Move::GameOptions(int choice)
         Redo();
         break;
     case 3:
+        GameLogic();
+        GameOptions(5);
+        break;
+    case 4:
         cout << "Exiting game..." << endl;
         exit(0); // Exit the game
         break;
-    case 4:
+    case 5:
         break;
     default:
         cout << "Invalid choice! Please choose a valid option." << endl;
@@ -190,7 +196,8 @@ void Move::DisplayOptions()
          << "[" << row << ", " << col << "]" << endl;
     cout << "1. Undo" << endl;
     cout << "2. Redo" << endl;
-    cout << "3. Exit" << endl;
+    cout << "3. Game Logic" << endl;
+    cout << "4. Exit" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -201,6 +208,12 @@ void Move::GamePlay()
 
     cout << "Choose a difficulty level between 1 (easy) and 9 (hard): ";
     cin >> difficulty;
+    while (difficulty < 1 || difficulty > 9)
+    {
+        cout << "Invalid input. Please enter a number between 1 and 9: ";
+        cin >> difficulty;
+    }
+    
     SetDifficulty(difficulty);
 
     NewGame();
@@ -210,17 +223,39 @@ void Move::GamePlay()
 
         cout << "Enter row: ";
         cin >> this->row;
+        while (this->row < 0 || this->row >= GRID_SIZE)
+        {
+            cout << "Invalid row. Please enter a number between 0 and " << GRID_SIZE - 1 << ": ";
+            cin >> this->row;
+        }
+
         cout << "Enter column: ";
         cin >> this->col;
+        while (this->col < 0 || this->col >= GRID_SIZE)
+        {
+            cout << "Invalid column. Please enter a number between 0 and " << GRID_SIZE - 1 << ": ";
+            cin >> this->col;
+        }
 
         SetMove(this->row, this->col);
         DisplayGrid();
 
+        if (CheckWinStatus())
+        {
+            cout << "Congratulations! You won the game!\n";
+            break;
+        }
+
         DisplayOptions();
         cin >> choice;
+        while (choice < 1 || choice > 5)
+        {
+            cout << "Invalid choice. Please enter a number between 1 and 4: ";
+            cin >> choice;
+        }
         GameOptions(choice);
 
-    } while (choice != 5); // Continue until the user chooses to view game instructions
+    } while (choice != 6); // Continue until the user chooses to view game instructions
 }
 
 bool Move::CheckWinStatus()
