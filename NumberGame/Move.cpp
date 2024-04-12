@@ -11,6 +11,7 @@ using namespace std;
  Improve the gameplay
  functions of the game are okay
 */
+void GameMenu();
 
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
@@ -152,17 +153,16 @@ void Move::ApplyMove(int row, int col)
     {
         if (i != col && i != row)
         {
-            grid[i][col] = (grid[i][col] == 1) ? TARGET_VALUE : ++grid[i][col];
+            grid[i][col] = (grid[i][col] == TARGET_VALUE) ? 1 : ++grid[i][col];
         }
         if (i != row && i != col)
         {
-            grid[row][i] = (grid[row][i] == 1) ? TARGET_VALUE : ++grid[row][i];
+            grid[row][i] = (grid[row][i] == TARGET_VALUE) ? 1 : ++grid[row][i];
         }
     }
 
-    grid[row][col] = (grid[row][col] == 1) ? TARGET_VALUE : ++grid[row][col];
+    grid[row][col] = (grid[row][col] == TARGET_VALUE) ? 1 : ++grid[row][col];
 }
-
 
 void Move::GameOptions(int choice)
 {
@@ -170,13 +170,16 @@ void Move::GameOptions(int choice)
     {
     case 1:
         Undo();
+        DisplayGrid();
         break;
     case 2:
         Redo();
+        DisplayGrid();
         break;
     case 3:
         GameLogic();
         GameOptions(5);
+        DisplayGrid();
         break;
     case 4:
         cout << "Exiting game..." << endl;
@@ -198,8 +201,26 @@ void Move::DisplayOptions()
     cout << "2. Redo" << endl;
     cout << "3. Game Logic" << endl;
     cout << "4. Exit" << endl;
+    cout << "5. Continue" << endl;
     cout << "Enter your choice: ";
 }
+
+// void GameMenu()
+// {
+//     int choice;
+//     Move move;
+//     do
+//     {
+//         move.DisplayOptions();
+//         cin >> choice;
+//         while (choice < 1 || choice > 5)
+//         {
+//             cout << "Invalid choice. Please enter a number between 1 and 4: ";
+//             cin >> choice;
+//         }
+//         move.GameOptions(choice);
+//     } while (choice != 5);
+// }
 
 void Move::GamePlay()
 {
@@ -213,7 +234,7 @@ void Move::GamePlay()
         cout << "Invalid input. Please enter a number between 1 and 9: ";
         cin >> difficulty;
     }
-    
+
     SetDifficulty(difficulty);
 
     NewGame();
@@ -246,14 +267,17 @@ void Move::GamePlay()
             break;
         }
 
-        DisplayOptions();
-        cin >> choice;
-        while (choice < 1 || choice > 5)
+        do
         {
-            cout << "Invalid choice. Please enter a number between 1 and 4: ";
+            DisplayOptions();
             cin >> choice;
-        }
-        GameOptions(choice);
+            while (choice < 1 || choice > 5)
+            {
+                cout << "Invalid choice. Please enter a number between 1 and 4: ";
+                cin >> choice;
+            }
+            GameOptions(choice);
+        } while (choice != 5);
 
     } while (choice != 6); // Continue until the user chooses to view game instructions
 }
