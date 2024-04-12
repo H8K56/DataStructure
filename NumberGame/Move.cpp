@@ -6,13 +6,6 @@
 #include <iomanip>
 using namespace std;
 
-/*
- Fix the flow of the game
- Improve the gameplay
- functions of the game are okay
-*/
-void GameMenu();
-
 const int GRID_SIZE = 3;
 const int TARGET_VALUE = 9;
 Stack undoStack, redoStack;
