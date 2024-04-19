@@ -198,23 +198,6 @@ void Move::DisplayOptions()
     cout << "Enter your choice: ";
 }
 
-// void GameMenu()
-// {
-//     int choice;
-//     Move move;
-//     do
-//     {
-//         move.DisplayOptions();
-//         cin >> choice;
-//         while (choice < 1 || choice > 5)
-//         {
-//             cout << "Invalid choice. Please enter a number between 1 and 4: ";
-//             cin >> choice;
-//         }
-//         move.GameOptions(choice);
-//     } while (choice != 5);
-// }
-
 void Move::GamePlay()
 {
     int difficulty;
