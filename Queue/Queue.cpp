@@ -22,6 +22,14 @@ bool Queue::full() const
 int Queue::size() const
 {
     return count;
+    bool Queue::full() const
+    {
+        return (rear + 1) % MAX == front;
+    }
+    int Queue::size() const
+    {
+        return (rear - front + MAX) % MAX;
+    }
 }
 
 int Queue::next(int &n)
